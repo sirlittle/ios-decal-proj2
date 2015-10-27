@@ -9,21 +9,25 @@
 import Foundation
 
 class Hangman {
-    var words: HangmanWords!
+    var phrases: HangmanWord!
     var answer: String?
     var knownString: String?
-    var guessedLetters: NSMutableArray?
+    var guessedLetters: NSMutableArray
     
+    // Initialize HangmanPhrase with all possible phrases of Hangman game
     init() {
-        words = HangmanWords()
+        phrases = HangmanWord()
+        guessedLetters = NSMutableArray()
     }
     
+    // Start the game, selecting a phrase from phrases. Also sets up the current known string
+    // and guessedLetters array
     func start() {
-        let word = words.getRandomWord()
-        answer = word
+        let phrase = phrases.getRandomWord()
+        answer = phrase
         knownString = ""
         for (var i = 0; i < answer!.characters.count; i += 1) {
-            if (word as NSString).substringWithRange(NSMakeRange(i, 1)) == " " {
+            if (phrase as NSString).substringWithRange(NSMakeRange(i, 1)) == " " {
                 knownString = knownString! + " "
             } else {
                 knownString = knownString! + "_"
@@ -32,34 +36,42 @@ class Hangman {
         guessedLetters = NSMutableArray()
     }
     
+    // Guess a letter, adding that letter to guessedLetters, and checking that letter against
+    // the answer phrase. Returns whether or not the guess is correct.
     func guessLetter(letter: String) -> Bool {
-        var result = false
-        if guessedLetters!.containsObject(letter) {
+        var isCorrect = false
+        if guessedLetters.containsObject(letter) {
             return true
         }
-        guessedLetters!.addObject(letter)
+        guessedLetters.addObject(letter)
         var chars = Array(answer!.characters)
         
         for (var i = 0; i < answer!.characters.count; i += 1) {
             if String(chars[i]) == letter {
-                result = true
+                isCorrect = true
                 knownString = "\((knownString! as NSString).substringToIndex(i))" + "\(letter)"
-                            + "\((knownString! as NSString).substringFromIndex(i+1))"
+                    + "\((knownString! as NSString).substringFromIndex(i+1))"
             }
-            
+        }
+        return isCorrect
+    }
+    
+    // Return a string of all letter guesses so far
+    func guesses() -> String {
+        if guessedLetters.count == 0 {
+            return ""
+        }
+        var result: String = ""
+        for (var i = 0; i < guessedLetters.count; i += 1) {
+            let x:String = (guessedLetters.objectAtIndex(i) as! String)
+            if(i == 0){
+                result = x;
+            }
+            else{
+                result = result + ", " + x
+            }
         }
         return result
     }
     
-    func guesses() -> String {
-        if guessedLetters!.count > 0 {
-            return ""
-        }
-        var result: String = guessedLetters!.objectAtIndex(0) as! String
-        for (var i = 0; i < guessedLetters!.count; i += 1) {
-            result = result + ", \(guessedLetters?.objectAtIndex(i))"
-        }
-        return result
-    }
-
 }

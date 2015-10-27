@@ -8,7 +8,7 @@
 
 import Foundation
 
-class HangmanWords {
+class HangmanWord {
     var words : NSArray!
 
     init() {
